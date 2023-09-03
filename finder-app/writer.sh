@@ -16,3 +16,7 @@ if ! echo "$2" > "$1" ; then
 echo "file cannot be created"
 exit 1
 fi
+if [ -f "$1" ] ; then
+echo "file cannot be created"
+exit 1
+fi
