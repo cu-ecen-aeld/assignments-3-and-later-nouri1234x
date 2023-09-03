@@ -3,15 +3,12 @@ if [ "$#" -ne 2 ] ; then
  echo "number of arguments shall be 2" 
  exit 1
 fi
-if ! [[ "$1" =~ ^\\/$|^((\\/([a-zA-Z0-9_-]+))+)$ ]]; then
- echo "file cannot be created"
- exit 1
-fi
+
 if !   mkdir -p "${1%/*}"  ; then 
- echo "file cannot be created"
+ echo "directory cannot be created"
  exit 1
 fi
-if ! touch "$1" ; then
+if ! >filename ; then
 echo "file cannot be created"
 exit 1
 fi
