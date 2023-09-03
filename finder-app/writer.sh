@@ -1,9 +1,8 @@
 #!/bin/sh
-if [ "$#" -ne 2 ] ; then
+if [ $# -ne 2 ] ; then
  echo "number of arguments shall be 2" 
  exit 1
 fi
-
 if !   mkdir -p "${1%/*}"  ; then 
  echo "directory cannot be created"
  exit 1
