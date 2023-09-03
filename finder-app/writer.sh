@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ "$#" -ne 2 ] ; then
- echo "number of arguments shall be 2" >&2
+ echo "number of arguments shall be 2" 
  exit 1
 fi
 
