@@ -1,4 +1,8 @@
 #include "systemcalls.h"
+#include <stdlib.h> 
+#include <stdio.h>
+#include <fcntl.h>
+#include <semaphore.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -69,8 +73,8 @@ int ret;
    }
 
    else if (pid == 0) { /* child process */
-   retour = execv(command);
-   if retour == -1 {
+   int retour = execv(command);
+   if (retour == -1) {
    return false;
    }
 
@@ -78,11 +82,12 @@ int ret;
    	/* parent will wait for the child to complete */
    	  int pidfils = wait(NULL);
    	/* When the child is ended, then the parent will continue to execute its code */
-   	  if pidfils == -1 {return false};
+   	  if (pidfils == -1) {return false;};
    }
     va_end(args);
 
     return true;
+}
 }
 
 /**
@@ -123,7 +128,7 @@ switch (kidpid = fork()) {
     if (dup2(fd, 1) < 0) { return false;}
     close(fd);
     int retour = execvp(command, args);
-    if retour == -1 {
+    if (retour == -1) {
     return false;
      }
   default:
@@ -132,7 +137,7 @@ switch (kidpid = fork()) {
        	/* parent will wait for the child to complete */
    	  int pidfils = wait(NULL);
    	/* When the child is ended, then the parent will continue to execute its code */
-   	  if pidfils == -1 {return false};
+   	  if (pidfils == -1) {return false;};
 }
 
     va_end(args);
