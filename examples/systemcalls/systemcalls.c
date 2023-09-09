@@ -16,7 +16,9 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
-
+int ret = system(cmd);
+if (ret==-1){
+return false;}
     return true;
 }
 
@@ -59,6 +61,25 @@ bool do_exec(int count, ...)
  *
 */
 
+ pid_t pid = fork();
+int ret;
+   if (pid < 0) { /* error occurred */
+   	fprintf(stderr, "Fork Failed");
+   	return false;
+   }
+
+   else if (pid == 0) { /* child process */
+   retour = execv(command);
+   if retour == -1 {
+   return false;
+   }
+
+   else { /* parent process */
+   	/* parent will wait for the child to complete */
+   	  int pidfils = wait(NULL);
+   	/* When the child is ended, then the parent will continue to execute its code */
+   	  if pidfils == -1 {return false};
+   }
     va_end(args);
 
     return true;
@@ -92,6 +113,27 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
+
+int kidpid;
+int fd = open("redirected.txt", O_WRONLY|O_TRUNC|O_CREAT, 0644);
+if (fd < 0) { return false; }
+switch (kidpid = fork()) {
+  case -1: return false;
+  case 0:
+    if (dup2(fd, 1) < 0) { return false;}
+    close(fd);
+    int retour = execvp(command, args);
+    if retour == -1 {
+    return false;
+     }
+  default:
+    close(fd);
+    /* do whatever the parent wants to do. */
+       	/* parent will wait for the child to complete */
+   	  int pidfils = wait(NULL);
+   	/* When the child is ended, then the parent will continue to execute its code */
+   	  if pidfils == -1 {return false};
+}
 
     va_end(args);
 
