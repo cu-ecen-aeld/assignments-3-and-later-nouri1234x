@@ -192,7 +192,7 @@ else if (kidpid==0){
    /*path1=basename(path1);
    command1[i] =path1;*/
    printf("we are her\n");
-   execpe(path,command1,newenviron);
+   execve(path,command1,newenviron);
    printf("we are her\n");
    exit (EXIT_SUCCESS);
 }
