@@ -1,0 +1,4 @@
+command=home is $HOME
+count :2
+path :
+PATH=home is $HOME

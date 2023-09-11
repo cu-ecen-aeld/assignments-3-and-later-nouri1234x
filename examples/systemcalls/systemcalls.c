@@ -3,7 +3,12 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <semaphore.h>
-
+#include <pthread.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <libgen.h>
 /**
  * @param cmd the command to execute with system()
  * @return true if the command in @param cmd was executed
@@ -20,10 +25,13 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+
+/*if (cmd[0] != '/') return false;*/
 int ret = system(cmd);
+
 if (ret==-1){
 return false;}
-    return true;
+    return true;      
 }
 
 /**
@@ -49,7 +57,9 @@ bool do_exec(int count, ...)
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
-    }
+    } 
+   
+
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
@@ -66,29 +76,58 @@ bool do_exec(int count, ...)
 */
 
  pid_t pid = fork();
-int ret;
+
    if (pid < 0) { /* error occurred */
    	fprintf(stderr, "Fork Failed");
    	return false;
    }
 
    else if (pid == 0) { /* child process */
-   int retour = execv(command);
-   if (retour == -1) {
-   return false;
+   char * command1[count];
+   char * path = command[0];
+   	
+
+   
+   
+ for(i=0; i<count-1; i++)
+    {
+        command1[i] = command[i+1];
+        printf("command=%s\n", command1[i]);
+    }
+   command1[count-1]=NULL;
+   printf ("count :%d\n",count);
+   printf("path :\n");
+   printf("PATH=%s\n", command1[count-2]);
+  if (command1[count-2][0] != '/') exit (1);
+   /*path1=basename(path1);
+   command1[i] =path1;*/
+   printf("we are her\n");
+   execv(path,command1);
+   printf("we are her\n");
+   exit (EXIT_SUCCESS);
    }
 
    else { /* parent process */
    	/* parent will wait for the child to complete */
-   	  int pidfils = wait(NULL);
+   	int status;
+   	  int pidfilsout = waitpid(pid,&status,0);
+   	  printf("retour fils : \n");
+   	  printf("pid=%d\n", pidfilsout);
    	/* When the child is ended, then the parent will continue to execute its code */
-   	  if (pidfils == -1) {return false;};
+   	printf (" Xex donne :%d\n",WIFEXITED(status));
+   	printf (" Xec donne :%d\n",WEXITSTATUS(status));
+   	printf (" Xed donne :%d\n",WIFSTOPPED(status) );
+   	  if (pidfilsout == -1) {return false;}
+   	     	  else if ( WEXITSTATUS(status)){
+   	     	  	
+   	     		return false;
+   	     		}
    }
     va_end(args);
 
     return true;
 }
-}
+
 
 /**
 * @param outputfile - The full path to the file to write with command output.
@@ -120,27 +159,65 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 */
 
 int kidpid;
+int status;
 int fd = open("redirected.txt", O_WRONLY|O_TRUNC|O_CREAT, 0644);
 if (fd < 0) { return false; }
-switch (kidpid = fork()) {
-  case -1: return false;
-  case 0:
+kidpid = fork();
+if (kidpid==-1) return false;
+else if (kidpid==0){
+
     if (dup2(fd, 1) < 0) { return false;}
-    close(fd);
-    int retour = execvp(command, args);
-    if (retour == -1) {
-    return false;
-     }
-  default:
-    close(fd);
-    /* do whatever the parent wants to do. */
-       	/* parent will wait for the child to complete */
-   	  int pidfils = wait(NULL);
-   	/* When the child is ended, then the parent will continue to execute its code */
-   	  if (pidfils == -1) {return false;};
+
+   char * command1[count+2];
+   char * path = command[0];
+   char *newenviron[] = { "$PATH=" , NULL };
+
+
+   	
+
+   
+  command1[count-1]=">" ;
+  command1[count]="redirected.txt";
+  command1[count+1]=NULL;
+ for(i=0; i<count-1; i++)
+    {
+        command1[i] = command[i+1];
+        printf("command=%s\n", command1[i]);
+    }
+   command1[count-1]=NULL;
+   printf ("count :%d\n",count);
+   printf("path :\n");
+   printf("PATH=%s\n", command1[count-2]);
+  if (command1[count-2][0] != '/') exit (1);
+   /*path1=basename(path1);
+   command1[i] =path1;*/
+   printf("we are her\n");
+   execpe(path,command1,newenviron);
+   printf("we are her\n");
+   exit (EXIT_SUCCESS);
 }
+else {
+
+ /* parent process */
+   	/* parent will wait for the child to complete */
+   	
+   	  int pidfilsout = waitpid(kidpid,&status,0);
+   	  printf("retour fils : \n");
+   	  printf("pid=%d\n", pidfilsout);
+   	/* When the child is ended, then the parent will continue to execute its code */
+   	printf (" Xex donne :%d\n",WIFEXITED(status));
+   	printf (" Xec donne :%d\n",WEXITSTATUS(status));
+   	printf (" Xed donne :%d\n",WIFSTOPPED(status) );
+   	  if (pidfilsout == -1) {return false;}
+   	     	  else if ( WEXITSTATUS(status)){
+   	     	  	
+   	     		return false;
+   	     		}
+   	     		
+   }
 
     va_end(args);
 
     return true;
 }
+
