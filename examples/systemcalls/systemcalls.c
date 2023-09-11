@@ -62,7 +62,7 @@ bool do_exec(int count, ...)
 
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
+    // and may b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e removed
     command[count] = command[count];
 
 /*
@@ -160,62 +160,24 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 
 int kidpid;
 int status;
-int fd = open("redirected.txt", O_WRONLY|O_TRUNC|O_CREAT, 0644);
-if (fd < 0) { return false; }
-kidpid = fork();
-if (kidpid==-1) return false;
-else if (kidpid==0){
-
-    if (dup2(fd, 1) < 0) { return false;}
-
-   char * command1[count+2];
-   char * path = command[0];
-   char *newenviron[] = { "$PATH=" , NULL };
-
-
-   	
-
-   
-  command1[count-1]=">" ;
-  command1[count]="redirected.txt";
-  command1[count+1]=NULL;
- for(i=0; i<count-1; i++)
-    {
-        command1[i] = command[i+1];
-        printf("command=%s\n", command1[i]);
-    }
-   command1[count-1]=NULL;
-   printf ("count :%d\n",count);
-   printf("path :\n");
-   printf("PATH=%s\n", command1[count-2]);
-  if (command1[count-2][0] != '/') exit (1);
-   /*path1=basename(path1);
-   command1[i] =path1;*/
-   printf("we are her\n");
-   execve(path,command1,newenviron);
-   printf("we are her\n");
-   exit (EXIT_SUCCESS);
+int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+if (fd < 0) { perror("open"); abort(); }
+switch (kidpid = fork()) {
+  case -1: perror("fork"); abort();
+  case 0:
+    if (dup2(fd, 1) < 0) { perror("dup2"); abort(); }
+    close(fd);
+    execv(command[0], &command[0]); perror("execvp"); abort();
+  default:
+    close(fd);
+    pid_t sonpid;
+    /* do whatever the parent wants to do. */
+           do {
+         sonpid = wait(&status);
+        
+       } while(sonpid != kidpid);
+    
 }
-else {
-
- /* parent process */
-   	/* parent will wait for the child to complete */
-   	
-   	  int pidfilsout = waitpid(kidpid,&status,0);
-   	  printf("retour fils : \n");
-   	  printf("pid=%d\n", pidfilsout);
-   	/* When the child is ended, then the parent will continue to execute its code */
-   	printf (" Xex donne :%d\n",WIFEXITED(status));
-   	printf (" Xec donne :%d\n",WEXITSTATUS(status));
-   	printf (" Xed donne :%d\n",WIFSTOPPED(status) );
-   	  if (pidfilsout == -1) {return false;}
-   	     	  else if ( WEXITSTATUS(status)){
-   	     	  	
-   	     		return false;
-   	     		}
-   	     		
-   }
-
     va_end(args);
 
     return true;
