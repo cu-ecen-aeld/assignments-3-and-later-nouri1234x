@@ -105,8 +105,12 @@ make CROSS_COMPILE=$CROSS_COMPILE
 
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cp writer.sh finder.sh writer finder-test.sh  ${OUTDIR}/rootfs/home
-
+cp writer.sh finder.sh writer finder-test.sh autorun-qemu.sh  ${OUTDIR}/rootfs/home
+mkdir ${OUTDIR}/rootfs/home/conf
+mkdir ${OUTDIR}/rootfs/conf
+#cp conf/username.txt conf/assignment.txt ${OUTDIR}/rootfs/home/conf
+cp ${FINDER_APP_DIR}/{conf/username.txt,conf/assignment.txt} ${OUTDIR}/rootfs/home/conf
+cp ${FINDER_APP_DIR}/{conf/username.txt,conf/assignment.txt} ${OUTDIR}/rootfs/conf
 # TODO: Chown the root directory
 cd "${OUTDIR}/rootfs"
 sudo chown -R root:root *
