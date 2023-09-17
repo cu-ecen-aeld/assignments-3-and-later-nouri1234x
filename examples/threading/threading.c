@@ -19,7 +19,7 @@ void* threadfunc(void* thread_param)
     usleep (t_param->wait_to_obtain_ms *1000);
      int rc=pthread_mutex_lock(t_param->mutex);
      if (rc != 0) {
-    perror("Failed thread  lock, error was");
+    
      t_param->thread_complete_success = false;
      return thread_param;}
     
@@ -27,7 +27,7 @@ void* threadfunc(void* thread_param)
     
     rc=pthread_mutex_unlock(t_param->mutex);
      if (rc != 0) {
-     perror("Failed thread  unlock, error was");
+     
      t_param->thread_complete_success = false;
      return thread_param;}
     t_param->thread_complete_success = true;
@@ -52,7 +52,7 @@ bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *mutex,int 
      params->wait_to_obtain_ms = wait_to_obtain_ms;
      params->wait_to_release_ms=wait_to_release_ms;
      params->mutex=mutex;
-     DEBUG_LOG("Main thread, PID %d TID %d", getpid(), (pid_t)syscall(SYS_gettid));
+     
 
      if ( thread == NULL ) {
                 ERROR_LOG("Failed to create thread");
