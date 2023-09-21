@@ -1,9 +1,16 @@
-CC = $(CROSS_COMPILE)gcc
 
-writer: writer.c
-	$(CC) -o writer writer.c
+SRC := writer.c 
+TARGET = writer
+OBJS := $(SRC:.c=.o)
 
-.PHONY: clean
+CROSS_COMPILE:=
+CC:= $(CROSS_COMPILE)gcc
+
+
+all: $(TARGET)
+
+$(TARGET) : $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
+	-rm -f *.o $(TARGET) *.elf *.map
