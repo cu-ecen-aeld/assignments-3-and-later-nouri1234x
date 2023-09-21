@@ -8,7 +8,8 @@ set -u
 NUMFILES=10
 WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
-username=$(cat conf/username.txt)
+CONFIG_FILES_ARE_AT =  /etc/finder-app/conf
+username=$(cat ${CONFIG_FILES_ARE_AT}/username.txt)
 
 if [ $# -lt 3 ]
 then
@@ -58,8 +59,8 @@ do
 done
 
 OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
-
-# remove temporary directories
+#  c. Modify your finder-test.sh script to write a file with output of the finder command to 
+echo $(./finder.sh "$WRITEDIR" "$WRITESTR") > /tmp/assignment4-result.txt
 rm -rf /tmp/aeld-data
 
 set +e
