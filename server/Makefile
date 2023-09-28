@@ -1,16 +1,29 @@
 
-SRC := aesdsocket.c 
-TARGET = aesdsocket
-OBJS := $(SRC:.c=.o)
 
-CROSS_COMPILE:=
-CC:= $(CROSS_COMPILE)gcc
+#new Makefile
+CC ?= gcc
+CFLAGS ?= -g -Wall -Wextra -Werror
+LDFLAGS ?= -lpthread
+TARGET ?= aesdsocket
+OBJFILES ?= aesdsocket.o
 
+ifdef CROSS_COMPILE
+    CC ?= $(CROSS_COMPILE)gcc
+endif
+
+
+
+.PHONY: all clean default
+
+default: $(TARGET)
 
 all: $(TARGET)
 
-$(TARGET) : $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) -o $(TARGET) $(LDFLAGS)
+$(TARGET): $(OBJFILES)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 
 clean:
-	-rm -f *.o $(TARGET) *.elf *.map
+	rm -f $(TARGET) $(OBJFILES)
